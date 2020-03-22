@@ -13,7 +13,7 @@ from PyQt5.QtCore import Qt
 from input_classifier import recog_run
 import numpy as np
 import cv2
-import time
+import time,datetime
 from os import getcwd
 from base64 import b64decode
 from background_png import img as bgImg
@@ -29,6 +29,7 @@ class Ui_MainWindow(object):
         self.slot_init()
         #self.backgroundimg = 255 * np.zeros((300, 250, 3), np.uint8)
         self.model_path = None
+        self.takePhoto_control = 0
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -191,7 +192,7 @@ class Ui_MainWindow(object):
 
             img = cv2.imdecode(np.fromfile(picChoose, dtype=np.uint8), -1)
             QtWidgets.QApplication.processEvents()
-            return_label = self.emotion_model.face_recog(backgroundImg, img, self.face_output, self.result_output)
+            return_label = self.emotion_model.face_recog(backgroundImg, img, self.face_output, self.result_output, self.takePhoto_control)
             self.label_resultoutput.setText(return_label)
             self.button_image.setText('Image')
         else:
@@ -213,7 +214,7 @@ class Ui_MainWindow(object):
         if self.timer_camera.isActive() == False:
             flag = self.cap.open(0)
             if flag == False:
-                msg = QtWidgets.QMessageBox.warning(self,'warning', "can not open", buttons=QtWidgets.QMessageBox.Ok)
+                msg = QtWidgets.QMessageBox.warning(self,'warning', "Camera not open", buttons=QtWidgets.QMessageBox.Ok)
             else:
                 QtWidgets.QApplication.processEvents()
                 self.button_camera.setText('Running')
@@ -228,8 +229,11 @@ class Ui_MainWindow(object):
         print("Camera_button")
 
     def take_photo(self):
-        print("takephoto_button")
 
+        print(self.takePhoto_control)
+        self.takePhoto_control = 1
+        print(datetime.datetime.now())
+        print(self.takePhoto_control)
     def display_result(self):
         ret, self.frame = self.cap.read()
         self.frame = cv2.flip(self.frame, 1)
@@ -240,6 +244,7 @@ class Ui_MainWindow(object):
         backgroundImg = cv2.imread('background.png')
         remove('background.png')
 
-        return_label = self.emotion_model.face_recog(backgroundImg, self.frame, self.face_output, self.result_output)
+        return_label = self.emotion_model.face_recog(backgroundImg, self.frame, self.face_output, self.result_output, self.takePhoto_control)
 
         self.label_resultoutput.setText(return_label)
+        self.takePhoto_control = 0
