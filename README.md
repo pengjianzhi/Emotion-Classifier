@@ -10,6 +10,6 @@ CUDA 10.0
 background_png.py: it is the background for the histogram  
 EmotionRecongnition: UI configuration file  
 input_classifier.py: It use model to classify the emotion and return the result  
-Main.py  
 pic2py.py: It is a translater to change the picture to python file  
 ?.hdf5: Model file  
+Main.py: Using to run the application
